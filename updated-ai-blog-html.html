@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Blogs Showcase</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            margin-top: 0.5rem;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .language-selector label {
+            margin-right: 10px;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .language-selector select {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .search-box {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 300px;
+            flex-grow: 1;
+        }
+        
+        .category-filter {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            flex-grow: 0;
+        }
+        
+        .blogs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .blog-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .placeholder-card {
+            opacity: 0.7;
+        }
+        
+        .placeholder-card:hover {
+            transform: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-img {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .card-img::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.3) 100%);
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .blog-category {
+            display: inline-block;
+            background-color: #dbeafe;
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .blog-title {
+            font-size: 1.25rem;
+            margin: 0.5rem 0;
+        }
+        
+        .blog-description {
+            color: #64748b;
+            margin-bottom: 1rem;
+            height: 6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+        
+        .blog-link {
+            display: inline-block;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        .blog-link:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+        
+        .pagination-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .pagination-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .pagination-btn.active {
+            background-color: var(--secondary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .blogs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .language-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+            
+            .language-selector label {
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="language-selector">
+                <label id="lang-label">Language:</label>
+                <select id="language-select">
+                    <option value="en">English</option>
+                    <option value="zh">中文</option>
+                    <option value="ja">日本語</option>
+                </select>
+            </div>
+            <h1 id="site-title">Excellent AI Blogs Showcase</h1>
+            <div id="site-subtitle" class="subtitle">Discover World-Class AI Thinking and Cutting-Edge Developments</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="filter-bar">
+            <input type="text" id="search-input" class="search-box" placeholder="Search blogs...">
+            <select id="category-select" class="category-filter">
+                <option value="all">All Categories</option>
+                <option value="research">AI Research</option>
+                <option value="applications">AI Applications</option>
+                <option value="news">AI News</option>
+                <option value="tutorials">Tutorials</option>
+                <option value="industry">Industry</option>
+                <option value="medical">Medical AI</option>
+            </select>
+        </div>
+        
+        <div class="blogs-grid" id="blogs-container">
+            <!-- Blog Cards will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="pagination">
+            <button class="pagination-btn active" id="page1-btn">1</button>
+            <button class="pagination-btn" id="page2-btn">2</button>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p id="footer-text">© 2025 Excellent AI Blogs Showcase | Exploring the AI Frontier</p>
+        </div>
+    </footer>
+
+    <script>
+        // Blog data
+        const blogsData = [
+            // Page 1
+            {
+                title: "OpenAI Research",
+                category: "research",
+                image: "https://framerusercontent.com/images/3QoIJiw9cgCCDzhvxAaCxtdw80w.png",
+                description: {
+                    en: "Official research blog from OpenAI presenting groundbreaking developments in AI capabilities, safety, and alignment with detailed technical papers and analyses.",
+                    zh: "OpenAI官方研究博客，展示AI能力、安全性和对齐方面的突破性进展，附有详细的技术论文和分析。",
+                    ja: "OpenAIの公式研究ブログで、AIの能力、安全性、アライメントにおける画期的な進展を詳細な技術論文と分析とともに発表しています。"
+                },
+                link: "https://openai.com/news/research/"
+            },
+            {
+                title: "KDnuggets",
+                category: "news",
+                image: "https://futureeducationmagazine.com/wp-content/uploads/2023/06/4.1-3.-KDnuggets.jpg",
+                description: {
+                    en: "A leading site for AI, analytics, data science, and machine learning, featuring articles, tutorials, and industry news from top professionals and researchers.",
+                    zh: "AI、分析、数据科学和机器学习领域的领先网站，提供来自顶尖专业人士和研究者的文章、教程和行业新闻。",
+                    ja: "AI、分析、データサイエンス、機械学習の分野をリードするサイトで、トップの専門家や研究者による記事、チュートリアル、業界ニュースを提供しています。"
+                },
+                link: "https://www.kdnuggets.com/"
+            },
+            {
+                title: "Towards Data Science",
+                category: "applications",
+                image: "https://blog.gdeltproject.org/wp-content/uploads/2020-towards-data-science-1064x417.png",
+                description: {
+                    en: "Medium's largest data science publication featuring thousands of articles on AI applications, machine learning techniques, and practical implementations from practitioners worldwide.",
+                    zh: "Medium上最大的数据科学出版物，包含来自全球从业者的数千篇关于AI应用、机器学习技术和实践实现的文章。",
+                    ja: "Mediumで最大のデータサイエンス出版物で、世界中の実践者によるAIアプリケーション、機械学習テクニック、実用的な実装に関する何千もの記事を特集しています。"
+                },
+                link: "https://towardsdatascience.com/"
+            },
+            {
+                title: "MarkTechPost",
+                category: "news",
+                image: "https://images.unsplash.com/photo-1591453089816-0fbb971b454c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+                description: {
+                    en: "AI news source covering deep learning, machine learning, computer vision, and NLP research with accessible explanations of complex concepts for both technical and non-technical audiences.",
+                    zh: "AI新闻来源，涵盖深度学习、机器学习、计算机视觉和NLP研究，为技术和非技术受众提供复杂概念的易懂解释。",
+                    ja: "深層学習、機械学習、コンピュータビジョン、NLP研究をカバーするAIニュースソースで、技術系・非技術系の両方の読者向けに複雑な概念をわかりやすく説明しています。"
+                },
+                link: "https://www.marktechpost.com/category/technology/artificial-intelligence/"
+            },
+            {
+                title: "Hugging Face",
+                category: "tutorials",
+                image: "https://images.pexels.com/photos/8386422/pexels-photo-8386422.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                description: {
+                    en: "Blog from the leading AI community platform, featuring tutorials, model explanations, and best practices for implementing transformer models and other state-of-the-art AI techniques.",
+                    zh: "来自领先AI社区平台的博客，提供有关实现transformer模型和其他最先进AI技术的教程、模型解释和最佳实践。",
+                    ja: "主要AIコミュニティプラットフォームからのブログで、トランスフォーマーモデルやその他の最先端AI技術を実装するためのチュートリアル、モデル解説、ベストプラクティスを提供しています。"
+                },
+                link: "https://huggingface.co/blog"
+            },
+            // Page 2
+            {
+                title: "Google DeepMind",
+                category: "research",
+                image: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                description: {
+                    en: "Official blog of Google DeepMind, sharing their latest research breakthroughs in reinforcement learning, multi-agent systems, AI safety, and ethics with in-depth explanations.",
+                    zh: "谷歌DeepMind官方博客，分享其在强化学习、多智能体系统、AI安全和伦理等方面的最新研究突破，并提供深入解释。",
+                    ja: "Google DeepMindの公式ブログで、強化学習、マルチエージェントシステム、AI安全性、倫理などの分野における最新の研究成果を深い説明とともに共有しています。"
+                },
+                link: "https://deepmind.com/blog"
+            },
+            {
+                title: "MIT News - Artificial Intelligence",
+                category: "research",
+                image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+                description: {
+                    en: "Coverage of AI research and innovations from MIT, featuring groundbreaking work from one of the world's leading institutions in AI development and applications across disciplines.",
+                    zh: "来自麻省理工学院的AI研究和创新报道，展示了这所世界领先的AI研发机构在跨学科领域的开创性工作。",
+                    ja: "MITからのAI研究とイノベーションの報道で、AIの開発と応用分野における世界をリードする機関の一つである同校の画期的な研究を特集しています。"
+                },
+                link: "https://news.mit.edu/topic/artificial-intelligence2"
+            },
+            {
+                title: "Towards AI",
+                category: "news",
+                image: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                description: {
+                    en: "Community-driven publication focusing on making AI accessible to everyone with articles ranging from beginner-friendly explanations to advanced technical discussions.",
+                    zh: "由社区驱动的出版物，专注于使AI对每个人都可访问，文章范围从适合初学者的解释到高级技术讨论。",
+                    ja: "AIを誰にでもアクセスしやすくすることに焦点を当てたコミュニティ主導の出版物で、初心者向けの説明から高度な技術的議論まで幅広い記事を提供しています。"
+                },
+                link: "https://towardsai.net/"
+            }
+        ];
+
+        // 翻译数据
+        const translations = {
+            en: {
+                siteTitle: "Excellent AI Blogs Showcase",
+                siteSubtitle: "Discover World-Class AI Thinking and Cutting-Edge Developments",
+                searchPlaceholder: "Search blogs...",
+                allCategories: "All Categories",
+                aiResearch: "AI Research",
+                aiApplications: "AI Applications",
+                aiNews: "AI News",
+                tutorials: "Tutorials",
+                industry: "Industry",
+                medicalAI: "Medical AI",
+                visitBlog: "Visit Blog",
+                footerText: "© 2025 Excellent AI Blogs Showcase | Exploring the AI Frontier",
+                langLabel: "Language:"
+            },
+            zh: {
+                siteTitle: "优秀AI博客展示",
+                siteSubtitle: "发现世界级AI思想与前沿进展",
+                searchPlaceholder: "搜索博客...",
+                allCategories: "所有类别",
+                aiResearch: "AI研究",
+                aiApplications: "AI应用",
+                aiNews: "AI新闻",
+                tutorials: "教程",
+                industry: "行业",
+                medicalAI: "医疗AI",
+                visitBlog: "访问博客",
+                footerText: "© 2025 优秀AI博客展示 | 探索AI前沿",
+                langLabel: "语言:"
+            },
+            ja: {
+                siteTitle: "優れたAIブログショーケース",
+                siteSubtitle: "世界クラスのAI思考と最先端の開発を発見する",
+                searchPlaceholder: "ブログを検索...",
+                allCategories: "すべてのカテゴリー",
+                aiResearch: "AI研究",
+                aiApplications: "AIアプリケーション",
+                aiNews: "AIニュース",
+                tutorials: "チュートリアル",
+                industry: "業界",
+                medicalAI: "医療AI",
+                visitBlog: "ブログを訪問",
+                footerText: "© 2025 優れたAIブログショーケース | AI最前線の探索",
+                langLabel: "言語:"
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'en';
+        
+        // DOM准备好后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始设置语言
+            updateLanguage('en');
+            
+            // 监听语言选择变化
+            document.getElementById('language-select').addEventListener('change', function() {
+                updateLanguage(this.value);
+            });
+            
+            // 监听页面切换
+            document.getElementById('page1-btn').addEventListener('click', function() {
+                showPage(0, 5);
+                setActivePage(this);
+            });
+            
+            document.getElementById('page2-btn').addEventListener('click', function() {
+                showPage(5, 8);
+                setActivePage(this);
+            });
+            
+            // 初始显示第一页
+            showPage(0, 5);
+        });
+        
+        // 更新语言
+        function updateLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            // 更新静态文本
+            document.getElementById('site-title').textContent = t.siteTitle;
+            document.getElementById('site-subtitle').textContent = t.siteSubtitle;
+            document.getElementById('search-input').placeholder = t.searchPlaceholder;
+            document.getElementById('lang-label').textContent = t.langLabel;
+            document.getElementById('footer-text').textContent = t.footerText;
+            
+            // 更新下拉菜单选项
+            const categorySelect = document.getElementById('category-select');
+            categorySelect.options[0].text = t.allCategories;
+            categorySelect.options[1].text = t.aiResearch;
+            categorySelect.options[2].text = t.aiApplications;
+            categorySelect.options[3].text = t.aiNews;
+            categorySelect.options[4].text = t.tutorials;
+            categorySelect.options[5].text = t.industry;
+            categorySelect.options[6].text = t.medicalAI;
+            
+            // 重新渲染博客卡片
+            renderBlogs();
+        }
+        
+        // 渲染博客卡片
+        function renderBlogs() {
+            const container = document.getElementById('blogs-container');
+            const currentPage = document.querySelector('.pagination-btn.active');
+            
+            // 清空容器
+            container.innerHTML = '';
+            
+            // 根据当前页面决定显示哪些博客
+            let start = 0;
+            let end = 5;
+            
+            if (currentPage.id === 'page2-btn') {
+                start = 5;
+                end = blogsData.length;
+            }
+            
+            // 添加博客卡片
+            for (let i = start; i < end; i++) {
+                if (i >= blogsData.length) break;
+                
+                const blog = blogsData[i];
+                const card = createBlogCard(blog);
+                container.appendChild(card);
+            }
+        }
+        
+        // 创建博客卡片
+        function createBlogCard(blog) {
+            const card = document.createElement('div');
+            card.className = 'blog-card';
+            
+            // 根据当前语言获取描述
+            const description = blog.description[currentLang] || blog.description.en;
+            
+            // 获取类别文本
+            let categoryText = '';
+            switch(blog.category) {
+                case 'research': 
+                    categoryText = translations[currentLang].aiResearch; 
+                    break;
+                case 'applications': 
+                    categoryText = translations[currentLang].aiApplications; 
+                    break;
+                case 'news': 
+                    categoryText = translations[currentLang].aiNews; 
+                    break;
+                case 'tutorials': 
+                    categoryText = translations[currentLang].tutorials; 
+                    break;
+                case 'industry': 
+                    categoryText = translations[currentLang].industry; 
+                    break;
+                case 'medical': 
+                    categoryText = translations[currentLang].medicalAI; 
+                    break;
+                default: 
+                    categoryText = blog.category;
+            }
+            
+            card.innerHTML = `
+                <div class="card-img" style="background-image: url('${blog.image}');"></div>
+                <div class="card-content">
+                    <span class="blog-category">${categoryText}</span>
+                    <h3 class="blog-title">${blog.title}</h3>
+                    <p class="blog-description">${description}</p>
+                    <a href="${blog.link}" class="blog-link" target="_blank">${translations[currentLang].visitBlog}</a>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // 显示指定页面范围的博客
+        function showPage(start, end) {
+            const container = document.getElementById('blogs-container');
+            
+            // 清空容器
+            container.innerHTML = '';
+            
+            // 计算当前应显示的博客数量
+            let count = 0;
+            
+            // 添加博客卡片
+            for (let i = start; i < end; i++) {
+                if (i >= blogsData.length) break;
+                
+                const blog = blogsData[i];
+                const card = createBlogCard(blog);
+                container.appendChild(card);
+                count++;
+            }
+            
+            // 如果当前页显示的博客数量不是3的倍数，添加占位卡片填充行
+            // 确保每行都有3个卡片，避免出现空白区域
+            const cardsPerRow = 3; // 每行显示3个卡片
+            if (count > 0 && count % cardsPerRow !== 0) {
+                const placeholdersNeeded = cardsPerRow - (count % cardsPerRow);
+                
+                for (let i = 0; i < placeholdersNeeded; i++) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'blog-card placeholder-card';
+                    
+                    // 创建一个空的卡片，但不显示内容，只占位
+                    placeholder.innerHTML = `
+                        <div class="card-img" style="background-image: url('https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');"></div>
+                        <div class="card-content">
+                            <span class="blog-category">Coming Soon</span>
+                            <h3 class="blog-title">More AI Content</h3>
+                            <p class="blog-description">Stay tuned for more fascinating AI content coming to our blog collection soon!</p>
+                        </div>
+                    `;
+                    
+                    container.appendChild(placeholder);
+                }
+            }
+        }
+        
+        // 设置活动页面
+        function setActivePage(button) {
+            // 移除所有活动类
+            document.querySelectorAll('.pagination-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 添加活动类到当前按钮
+            button.classList.add('active');
+        }
+
+        // 添加搜索功能
+        document.getElementById('search-input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            filterBlogs(searchTerm, document.getElementById('category-select').value);
+        });
+
+        // 添加分类过滤功能
+        document.getElementById('category-select').addEventListener('change', function() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            filterBlogs(searchTerm, this.value);
+        });
+
+        // 过滤博客函数
+        function filterBlogs(searchTerm, category) {
+            const container = document.getElementById('blogs-container');
+            container.innerHTML = '';
+
+            let filteredBlogs = blogsData.filter(blog => {
+                const matchesSearch = 
+                    blog.title.toLowerCase().includes(searchTerm) || 
+                    blog.description[currentLang].toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = category === 'all' || blog.category === category;
+                
+                return matchesSearch && matchesCategory;
+            });
+
+            if (filteredBlogs.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.style.gridColumn = '1 / -1';
+                noResults.style.textAlign = 'center';
+                noResults.innerHTML = `<p>No blogs found matching your criteria.</p>`;
+                container.appendChild(noResults);
+                return;
+            }
+
+            filteredBlogs.forEach(blog => {
+                const card = createBlogCard(blog);
+                container.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
